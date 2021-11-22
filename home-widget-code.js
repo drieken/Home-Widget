@@ -1008,6 +1008,7 @@ const homeWidget = {
 
   // Display a time-based greeting on the widget.
   greeting(column) {
+
     // This function makes a greeting based on the time of day.
     function makeGreeting(hour, localization) {
       if (hour    < 5)  { return localization.nightGreeting }
@@ -1017,7 +1018,6 @@ const homeWidget = {
       return localization.nightGreeting
     }
     this.provideText(makeGreeting(this.now.getHours(), this.localization), column, this.format.greeting, true)
-   
   },
 
   // Display events on the widget.
