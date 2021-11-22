@@ -1008,7 +1008,6 @@ const homeWidget = {
 
   // Display a time-based greeting on the widget.
   greeting(column) {
- greeting.centerAlignText();
     // This function makes a greeting based on the time of day.
     function makeGreeting(hour, localization) {
       if (hour    < 5)  { return localization.nightGreeting }
