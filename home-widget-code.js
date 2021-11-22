@@ -1018,6 +1018,7 @@ const homeWidget = {
       return localization.nightGreeting
     }
     this.provideText(makeGreeting(this.now.getHours(), this.localization), column, this.format.greeting, true)
+    makeGreeting.centerAlignText();
   },
 
   // Display events on the widget.
