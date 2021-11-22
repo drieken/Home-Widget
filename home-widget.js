@@ -5,15 +5,7 @@
 
 ~
 
-Welcome to Weather Cal. Run this script to set up your widget.
 
-Add or remove items from the widget in the layout section below.
-
-You can duplicate this script to create multiple widgets. Make sure to change the name of the script each time.
-
-Happy scripting!
-
-~
 
 */
 
@@ -42,8 +34,8 @@ const layout = `
  */
 
 // Names of Weather Cal elements.
-const codeFilename = "Weather Cal code"
-const gitHubUrl = "https://raw.githubusercontent.com/mzeryck/Weather-Cal/main/weather-cal-code.js"
+const codeFilename = "HomeWidget code"
+const gitHubUrl = "https://raw.githubusercontent.com/drieken/Home-Widget/main/home-widget-code.js"
 
 // Determine if the user is using iCloud.
 let files = FileManager.local()

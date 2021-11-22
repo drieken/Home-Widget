@@ -4,33 +4,32 @@
 
 /*
 
-This script contains the logic that allows Weather Cal to work. Please do not modify this file. You can add customizations in the widget script.
-Documentation is available at github.com/mzeryck/Weather-Cal
+
 
 */
 
-const weatherCal = {
+const homeWidget = {
 
   // Initialize shared properties.
   initialize(name, iCloudInUse) {
     this.name = name
     this.fm = iCloudInUse ? FileManager.iCloud() : FileManager.local()
-    this.bgPath = this.fm.joinPath(this.fm.libraryDirectory(), "weather-cal-" + this.name)
-    this.prefPath = this.fm.joinPath(this.fm.libraryDirectory(), "weather-cal-preferences-" + name)
-    this.widgetUrl = "https://raw.githubusercontent.com/mzeryck/Weather-Cal/main/weather-cal.js"
+    this.bgPath = this.fm.joinPath(this.fm.libraryDirectory(), "home-widget-" + this.name)
+    this.prefPath = this.fm.joinPath(this.fm.libraryDirectory(), "home-widget-preferences-" + name)
+    this.widgetUrl = "https://raw.githubusercontent.com/drieken/Home-Widget/main/home-widget.js"
     this.now = new Date()
     this.data = {}
     this.initialized = true
   },
 
-  // Determine what to do when Weather Cal is run.
+  // Determine what to do when Home Widget is run.
   async runSetup(name, iCloudInUse, codeFilename, gitHubUrl) {
     if (!this.initialized) this.initialize(name, iCloudInUse)
     const backgroundSettingExists = this.fm.fileExists(this.bgPath)
 
-    if (!this.fm.fileExists(this.fm.joinPath(this.fm.libraryDirectory(), "weather-cal-setup"))) return await this.initialSetup(backgroundSettingExists)
+    if (!this.fm.fileExists(this.fm.joinPath(this.fm.libraryDirectory(), "home-widget-setup"))) return await this.initialSetup(backgroundSettingExists)
     if (backgroundSettingExists) return await this.editSettings(codeFilename, gitHubUrl)
-    await this.generateAlert("Weather Cal is set up, but you need to choose a background for this widget.",["Continue"])
+    await this.generateAlert("Home Widget is set up, but you need to choose a background for this widget.",["Continue"])
     return await this.setWidgetBackground() 
   },
 
@@ -38,12 +37,12 @@ const weatherCal = {
   async initialSetup(imported = false) {
     let message, options
     if (!imported) {
-      message = "Welcome to Weather Cal. Make sure your script has the name you want before you begin."
-      options = ['I like the name "' + this.name + '"', "Let me go change it"]
+      message = "Welcome to Home Widget. Make sure to setup the right name of your Widget."
+      options = ['Keep that name "' + this.name + '"', "Change the name"]
       if (await this.generateAlert(message,options)) return
     }
 
-    message = (imported ? "Welcome to Weather Cal. We" : "Next, we") + " need to check if you've given permissions to the Scriptable app. This might take a few seconds."
+    message = (imported ? "Welcome to Home Widget. We" : "Next, we") + " need to check if you've given permissions to the Scriptable app. This might take a few seconds."
     await this.generateAlert(message,["Check permissions"])
 
     let errors = []
@@ -66,7 +65,7 @@ const weatherCal = {
     if (await this.generateAlert(message,options)) return
 
     message = "To display the weather on your widget, you need an OpenWeather API key."
-    options = ["I already have a key", "I need to get a key", "I don't want to show weather info"]
+    options = ["I already have a key", "I need to get a key", "Disable weather informations"]
     const weather = await this.generateAlert(message,options)
 
     // Show a web view to claim the API key.
@@ -83,7 +82,7 @@ const weatherCal = {
     if (weather < 2 && !(await this.getWeatherKey(true))) { return }
 
     if (!imported) { await this.setWidgetBackground() }
-    this.writePreference("weather-cal-setup", "true")
+    this.writePreference("home-widget-setup", "true")
 
     message = "Your widget is ready! You'll now see a preview. Re-run this script to edit the default preferences, including localization. When you're ready, add a Scriptable widget to the home screen and select this script."
     await this.generateAlert(message,["Show preview"])
@@ -99,7 +98,7 @@ const weatherCal = {
       update: "Update code", 
       share: "Export widget", 
       other: "Other settings", 
-      exit: "Exit settings menu", 
+      exit: "Exit", 
     }
     const menuOptions = [menu.preview, menu.background, menu.preferences, menu.update, menu.share, menu.other, menu.exit]
     const response = menuOptions[await this.generateAlert("Widget Setup",menuOptions)]
@@ -109,7 +108,7 @@ const weatherCal = {
     if (response == menu.preferences) { return await this.editPreferences() }
 
     if (response == menu.update) {
-      if (await this.generateAlert("Would you like to update the Weather Cal code? Your widgets will not be affected.",["Update", "Exit"])) return
+      if (await this.generateAlert("Would you like to update the Home Widget code? Your widgets will not be affected.",["Update", "Exit"])) return
       const success = await this.downloadCode(codeFilename, gitHubUrl)
       return await this.generateAlert(success ? "The update is now complete." : "The update failed. Please try again later.")
     }
@@ -128,13 +127,13 @@ const weatherCal = {
       }
       let fm = FileManager.local()
       fm = fm.isFileStoredIniCloud(module.filename) ? FileManager.iCloud() : fm
-      const path = fm.joinPath(fm.documentsDirectory(), "Weather Cal code.js")
+      const path = fm.joinPath(fm.documentsDirectory(), "Home Widget code.js")
       const wc = fm.fileExists(path) ? fm.readString(path) : false
       const version = wc ? parseInt(wc.slice(wc.lastIndexOf("//") + 2).trim()) : false
-      if (wc && (!version || version < 4)) { return await makeAlert("Please update Weather Cal before importing a widget.").present() }
-      if ((await makeAlert("Do you want your widget to be named " + Script.name() + "?",["Yes, looks good","No, let me change it"]).present()) == 1) { return }
-      fm.writeString(fm.joinPath(fm.libraryDirectory(), "weather-cal-preferences-" + Script.name()), '${prefs}')
-      fm.writeString(fm.joinPath(fm.libraryDirectory(), "weather-cal-" + Script.name()), '${bg}')
+      if (wc && (!version || version < 4)) { return await makeAlert("Please update Home Widget before importing a widget.").present() }
+      if ((await makeAlert("Do you want your widget to be named " + Script.name() + "?",["Yes","No, let me change it"]).present()) == 1) { return }
+      fm.writeString(fm.joinPath(fm.libraryDirectory(), "home-widget-preferences-" + Script.name()), '${prefs}')
+      fm.writeString(fm.joinPath(fm.libraryDirectory(), "home-widget-" + Script.name()), '${bg}')
       let code = await new Request('${this.widgetUrl}').loadString()
       let arr = code.split('\`')
       arr[1] = \`${layout}\`
@@ -170,7 +169,7 @@ const weatherCal = {
 
         if ((await alert.present()) == 0) {
           for (item of this.fm.listContents(this.fm.libraryDirectory())) {
-            if (item.startsWith("weather-cal-") && item != "weather-cal-api-key" && item != "weather-cal-setup") {
+            if (item.startsWith("home-widget-") && item != "home-widget-api-key" && item != "home-widget-setup") {
               this.fm.remove(this.fm.joinPath(this.fm.libraryDirectory(), item))
             }
           }
@@ -189,7 +188,7 @@ const weatherCal = {
     const apiKey = returnVal.textFieldValue(0)
     if (!apiKey || apiKey == "" || apiKey == null) { return await this.generateAlert("No API key was entered. Try copying the key again and re-running this script.",["Exit"]) }
 
-    this.writePreference("weather-cal-api-key", apiKey)
+    this.writePreference("home-widget-api-key", apiKey)
     const req = new Request("https://api.openweathermap.org/data/2.5/onecall?lat=37.332280&lon=-122.010980&appid=" + apiKey)
     try { val = await req.loadJSON() } catch { val = { current: false } }
 
@@ -229,7 +228,7 @@ const weatherCal = {
     } else if (backgroundType == 3) {
       background.type = "image"
 
-      const directoryPath = this.fm.joinPath(this.fm.documentsDirectory(), "Weather Cal")
+      const directoryPath = this.fm.joinPath(this.fm.documentsDirectory(), "Home Widget")
       if (!this.fm.fileExists(directoryPath) || !this.fm.isDirectory(directoryPath)) { this.fm.createDirectory(directoryPath) }
       
       this.fm.writeImage(this.fm.joinPath(directoryPath, this.name + ".jpg"), await Photos.fromLibrary())
@@ -566,7 +565,7 @@ const weatherCal = {
 
     } else if (background.type == "image") {
       const extension = (this.darkMode && background.dark && !this.settings.widget.instantDark ? " (Dark)" : "") + ".jpg"
-      const imagePath = this.fm.joinPath(this.fm.joinPath(this.fm.documentsDirectory(), "Weather Cal"), name + extension)
+      const imagePath = this.fm.joinPath(this.fm.joinPath(this.fm.documentsDirectory(), "Home Widget"), name + extension)
 
       if (this.fm.fileExists(imagePath)) {
         if (this.fm.isFileStoredIniCloud(imagePath)) { await this.fm.downloadFileFromiCloud(imagePath) }
@@ -820,7 +819,7 @@ const weatherCal = {
 
   // Set up the location data object.
   async setupLocation() {
-    const locationPath = this.fm.joinPath(this.fm.libraryDirectory(), "weather-cal-location")
+    const locationPath = this.fm.joinPath(this.fm.libraryDirectory(), "home-widget-location")
     const locationCache = this.getCache(locationPath, this.settings ? parseInt(this.settings.widget.updateLocation) : null)
     let location
     
@@ -849,7 +848,7 @@ const weatherCal = {
     const location = this.data.location
     async function getSunData(date) { return await new Request("https://api.sunrise-sunset.org/json?lat=" + location.latitude + "&lng=" + location.longitude + "&formatted=0&date=" + date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate()).loadJSON() }
 
-    const sunPath = this.fm.joinPath(this.fm.libraryDirectory(), "weather-cal-sunrise")
+    const sunPath = this.fm.joinPath(this.fm.libraryDirectory(), "home-widget-sunrise")
     let sunData = this.getCache(sunPath, 60, 1440)
 
     if (!sunData || sunData.cacheExpired || !sunData.results || sunData.results.length == 0) { 
@@ -874,7 +873,7 @@ const weatherCal = {
   async setupWeather() {
     if (!this.data.location) { await this.setupLocation() }
 
-    const weatherPath = this.fm.joinPath(this.fm.libraryDirectory(), "weather-cal-cache")
+    const weatherPath = this.fm.joinPath(this.fm.libraryDirectory(), "home-widget-cache")
     let weatherData = this.getCache(weatherPath, 1, 60)
     
     const forcedLocale = this.settings.weather.locale || ""
@@ -893,7 +892,7 @@ const weatherCal = {
 
     if (!weatherData || weatherData.cacheExpired) {
       try {
-        const apiKey = this.fm.readString(this.fm.joinPath(this.fm.libraryDirectory(), "weather-cal-api-key")).replace(/\"/g,"")
+        const apiKey = this.fm.readString(this.fm.joinPath(this.fm.libraryDirectory(), "home-widget-api-key")).replace(/\"/g,"")
         const weatherReq = "https://api.openweathermap.org/data/2.5/onecall?lat=" + this.data.location.latitude + "&lon=" + this.data.location.longitude + "&exclude=minutely,alerts&units=" + this.settings.widget.units + "&lang=" + locale + "&appid=" + apiKey
         weatherData = await new Request(weatherReq).loadJSON()
         if (weatherData.cod) { weatherData = null }
@@ -924,7 +923,7 @@ const weatherCal = {
 
   // Set up the COVID data object.
   async setupCovid() {
-    const covidPath = this.fm.joinPath(this.fm.libraryDirectory(), "weather-cal-covid")
+    const covidPath = this.fm.joinPath(this.fm.libraryDirectory(), "home-widget-covid")
     let covidData = this.getCache(covidPath, 15, 1440)
 
     if (!covidData || covidData.cacheExpired) {
@@ -938,7 +937,7 @@ const weatherCal = {
   
   // Set up the news.
   async setupNews() {
-    const newsPath = this.fm.joinPath(this.fm.libraryDirectory(), "weather-cal-news")
+    const newsPath = this.fm.joinPath(this.fm.libraryDirectory(), "home-widget-news")
     let newsData = this.getCache(newsPath, 1, 1440)
 
     if (!newsData || newsData.cacheExpired) {
@@ -1903,7 +1902,7 @@ const weatherCal = {
           val: { top: "", left: "", bottom: "", right: "" },
           name: "Custom widget padding",
           type: "multival",
-          description: "The padding around the entire widget. By default, these values are blank and Weather Cal uses the item padding to determine these values. Transparent widgets often look best with these values at 0.",
+          description: "The padding around the entire widget. By default, these values are blank and Home Widget uses the item padding to determine these values. Transparent widgets often look best with these values at 0.",
         },
         tintIcons: {
           val: this.enum.icons.never,
@@ -2436,7 +2435,7 @@ const weatherCal = {
   },
 }
 
-module.exports = weatherCal
+module.exports = homeWidget
 
 /*
  * Detect the current module
@@ -2452,9 +2451,9 @@ if (moduleName == Script.name()) {
     row
       column
     `
-    const name = "Weather Cal Widget Builder"
-    await weatherCal.runSetup(name, true, "Weather Cal code", "https://raw.githubusercontent.com/mzeryck/Weather-Cal/main/weather-cal-code.js")
-    const w = await weatherCal.createWidget(layout, name, true)
+    const name = "Home Widget Builder"
+    await homeWidget.runSetup(name, true, "Home Widget code", "https://raw.githubusercontent.com/drieken/Home-Widget/main/home-widget-code.js")
+    const w = await homeWidget.createWidget(layout, name, true)
     w.presentLarge()
     Script.complete()
   })() 

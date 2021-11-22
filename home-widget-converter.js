@@ -4,16 +4,16 @@
 
 /*
 
-WEATHER CAL CONVERTER
+HOME WIDGET CONVERTER
 =====================
    ~ by @mzeryck ~   
 
-This script converts Scriptable widgets into Weather Cal widget items. Read this entire comment before you begin.
+This script converts Scriptable widgets into Home Widget items. Read this entire comment before you begin.
 
 BEFORE YOU START
 ================
 
-You may need to modify your Weather Cal widget script, since it doesn't get updated when you run the "Update code" function. 
+You may need to modify your Home Widget script, since it doesn't get updated when you run the "Update code" function. 
 
 Find this line of code:
 const code = importModule(codeFilename)
@@ -34,11 +34,11 @@ const widget = await code.createWidget(layout, Script.name(), iCloudInUse, custo
 HOW THIS SCRIPT WORKS
 =====================
 
-- When you run this script, choose a name. This is the word you'll be adding to the Weather Cal layout.
+- When you run this script, choose a name. This is the word you'll be adding to the Home Widget layout.
 - Select the file containing the widget script.
 - When it displays the code, use the share icon in the top right to copy the text.
-- Open a Weather Cal widget script and paste the code into the custom object after the comment. If you're pasting multiple items, make sure to paste it after the previous comma but before the final bracket.
-- In your Weather Cal layout, add the name of your new widget item.
+- Open a Home Widget widget script and paste the code into the custom object after the comment. If you're pasting multiple items, make sure to paste it after the previous comma but before the final bracket.
+- In your Home Widget layout, add the name of your new widget item.
 
 
 *********************
@@ -46,7 +46,7 @@ HOW THIS SCRIPT WORKS
 PLEASE NOTE
 ===========
 
-Doing this without modifying the output will usually break the "Show widget preview" function of Weather Cal. This is because many widgets will detect that they're running in the Scriptable app and attempt to show their own preview or change their behavior. However, the widget will still work fine on your home screen.
+Doing this without modifying the output will usually break the "Show widget preview" function of Home Widget. This is because many widgets will detect that they're running in the Scriptable app and attempt to show their own preview or change their behavior. However, the widget will still work fine on your home screen.
 
 *********************
 
